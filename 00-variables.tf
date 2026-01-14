@@ -192,3 +192,23 @@ variable "external_cloud_provider_manifest" {
   description = "externalCloudProvider manifest to be applied if var.enable_external_cloud_provider is enabled. If you want to deploy it manually (e.g., via Helm chart), enable var.enable_external_cloud_provider but set this value to an empty string (\"\"). See https://kubernetes.io/docs/tasks/administer-cluster/running-cloud-controller/."
   type        = string
 }
+
+variable "root_volume_size" {
+  default     = 150
+  description = "Root volume size in GB"
+  type        = number
+}
+
+variable "system_extensions" {
+  default     = []
+  description = "List of system extensions to install on nodes (Talos v1.11.x)"
+  type = list(object({
+    image = string
+  }))
+}
+
+variable "machine_config_patches" {
+  default     = []
+  description = "Machine configuration patches to apply to all nodes"
+  type        = list(string)
+}

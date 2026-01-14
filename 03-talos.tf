@@ -136,7 +136,7 @@ module "talos_control_plane_nodes" {
   vpc_security_group_ids = [module.cluster_sg.security_group_id]
 
   root_block_device = {
-    size = 50
+    size = var.root_volume_size
   }
 }
 
@@ -164,7 +164,7 @@ module "talos_worker_group" {
   vpc_security_group_ids = [module.cluster_sg.security_group_id]
 
   root_block_device = {
-    size = 50
+    size = var.root_volume_size
   }
 }
 
@@ -183,6 +183,8 @@ data "talos_machine_configuration" "controlplane" {
     local.config_patches_common,
     [yamlencode(local.common_config_patch)],
     [yamlencode(local.config_cilium_patch)],
+    var.system_extensions != [] ? [yamlencode({ machine = { install = { extensions = var.system_extensions } } })] : [],
+    var.machine_config_patches,
     [for path in var.control_plane.config_patch_files : file(path)]
   )
 }
@@ -216,6 +218,8 @@ data "talos_machine_configuration" "worker_group" {
     local.config_patches_common,
     [yamlencode(local.common_config_patch)],
     [yamlencode(local.config_cilium_patch)],
+    var.system_extensions != [] ? [yamlencode({ machine = { install = { extensions = var.system_extensions } } })] : [],
+    var.machine_config_patches,
     [for path in each.value.config_patch_files : file(path)]
   )
 }
